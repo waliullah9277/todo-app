@@ -1,0 +1,137 @@
+<nav class="bg-white shadow mb-6">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <!-- Left: Brand & Main Links -->
+    <div class="flex items-center gap-4">
+      <a href="{% url 'todo_list' %}" class="text-xl font-bold text-blue-600 mr-6">To-Do App</a>
+      <div class="hidden md:flex gap-4 items-center">
+        <a href="{% url 'todo_list' %}" class="text-gray-700 hover:text-blue-600 text-sm font-medium">Home</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 text-sm font-medium">About Us</a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 text-sm font-medium">Blogs</a>
+        <!-- Always show Add Todo button -->
+        <button 
+          id="addTodoBtn"
+          class="ml-2 bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold focus:outline-none"
+          type="button"
+        >
+          + Add Todo
+        </button>
+      </div>
+    </div>
+    <!-- Right: User Info & Auth Buttons (Desktop) -->
+    <div class="hidden md:flex items-center gap-2">
+      {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="flex items-center gap-2 px-2 py-1 rounded hover:bg-blue-50 transition">
+          {% if user.profile.photo %}
+            <img src="{{ user.profile.photo.url }}" alt="Profile" class="h-8 w-8 rounded-full object-cover border border-gray-200">
+          {% else %}
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-gray-500 text-sm">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
+            </span>
+          {% endif %}
+          <span class="text-xs font-semibold text-gray-700">{{ user.get_full_name|default:user.username }}</span>
+        </a>
+        <a href="{% url 'profile_detail' user.username %}" class="bg-gray-100 hover:bg-blue-100 text-gray-800 px-2 py-1 rounded text-xs font-semibold">Profile</a>
+        <form action="{% url 'logout' %}" method="post" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold ml-1">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">Login</a>
+        <a href="{% url 'register' %}" class="bg-gray-100 hover:bg-blue-100 text-gray-800 px-2 py-1 rounded text-xs font-semibold ml-1">Register</a>
+      {% endif %}
+    </div>
+    <!-- Hamburger Menu (Mobile) -->
+    <button id="navToggle" class="md:hidden flex items-center px-2 py-1 border rounded text-blue-600 border-blue-600">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </div>
+  <!-- Mobile Nav -->
+  <div id="mobileNav" class="md:hidden hidden px-4 pb-4">
+    <div class="flex flex-col items-center gap-2 text-center">
+      {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="flex flex-col items-center gap-1 mb-2">
+          {% if user.profile.photo %}
+            <img src="{{ user.profile.photo.url }}" alt="Profile" class="h-12 w-12 rounded-full object-cover border border-gray-200 mx-auto">
+          {% else %}
+            <span class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gray-200 text-gray-500 text-lg mx-auto">
+              <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
+            </span>
+          {% endif %}
+          <span class="font-semibold text-gray-700 text-sm">{{ user.get_full_name|default:user.username }}</span>
+        </a>
+      {% endif %}
+      <a href="{% url 'todo_list' %}" class="text-gray-700 hover:text-blue-600 text-sm font-medium w-full">Home</a>
+      <a href="#" class="text-gray-700 hover:text-blue-600 text-sm font-medium w-full">About Us</a>
+      <a href="#" class="text-gray-700 hover:text-blue-600 text-sm font-medium w-full">Blogs</a>
+      <!-- Always show for mobile -->
+      <button 
+        id="addTodoBtnMobile"
+        class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold focus:outline-none w-1/4"
+        type="button"
+      >
+        + Add Todo
+      </button>
+      {% if user.is_authenticated %}
+        <a href="{% url 'profile_detail' user.username %}" class="bg-gray-100 hover:bg-blue-100 text-gray-800 px-2 py-1 rounded text-xs font-semibold w-1/4">Profile</a>
+        <form action="{% url 'logout' %}" method="post" class="w-full flex justify-center">
+          {% csrf_token %}
+          <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold mt-1 w-1/4">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold w-1/4">Login</a>
+        <a href="{% url 'register' %}" class="bg-gray-100 hover:bg-blue-100 text-gray-800 px-2 py-1 rounded text-xs font-semibold w-1/4">Register</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<!-- Add Todo Modal: Authenticated user gets form, otherwise message -->
+<div id="addTodoModal" class="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-30 hidden">
+  <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
+    <button type="button" id="closeModalBtn" class="absolute top-2 right-2 text-gray-400 hover:text-gray-800 text-2xl font-bold">&times;</button>
+    <h2 class="text-xl font-bold mb-4 text-blue-600 text-center">Add Todo</h2>
+    {% if user.is_authenticated and todo_form %}
+      <form method="post" action="{% url 'add_task' %}" id="addTodoForm" class="flex flex-col space-y-3">
+        {% csrf_token %}
+        {{ todo_form.title }}
+        {{ todo_form.description }}
+        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold text-sm">Add</button>
+      </form>
+    {% else %}
+      <div class="text-center text-red-500 p-4">
+        Please <a href="{% url 'login' %}" class="underline text-blue-600">log in</a> to add tasks.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Navbar toggle (mobile)
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  navToggle.addEventListener('click', () => {
+    mobileNav.classList.toggle('hidden');
+  });
+
+  // Add Todo Modal (works for both desktop and mobile)
+  const addTodoBtn = document.getElementById('addTodoBtn');
+  const addTodoBtnMobile = document.getElementById('addTodoBtnMobile');
+  const addTodoModal = document.getElementById('addTodoModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  if(addTodoBtn) addTodoBtn.addEventListener('click', () => { addTodoModal.classList.remove('hidden'); });
+  if(addTodoBtnMobile) addTodoBtnMobile.addEventListener('click', () => { 
+    addTodoModal.classList.remove('hidden');
+    mobileNav.classList.add('hidden');
+  });
+  if(closeModalBtn) closeModalBtn.addEventListener('click', () => {
+    addTodoModal.classList.add('hidden');
+  });
+  if(addTodoModal) addTodoModal.addEventListener('click', function(e){
+    if(e.target === addTodoModal){
+      addTodoModal.classList.add('hidden');
+    }
+  });
+</script>

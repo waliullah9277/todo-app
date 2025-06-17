@@ -1,0 +1,40 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold text-center mb-6 text-blue-600">Login to Your Account</h2>
+<form method="post" class="bg-white p-8 rounded-lg shadow max-w-md mx-auto space-y-6">
+    {% csrf_token %}
+    {% for field in form %}
+        <div>
+            <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-1">
+                {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+                <p class="text-red-500 text-sm mt-1">
+                    {% for error in field.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>
+    {% endfor %}
+    {% if form.non_field_errors %}
+        <div class="text-red-600 text-sm">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold">Login</button>
+    <div class="text-center mt-4">
+        <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Don't have an account?</a>
+    </div>
+    <!-- Stylish Forgot Password Link -->
+    <div class="text-center mt-3">
+        <a href="{% url 'password_reset' %}" 
+           class="inline-block text-pink-600 font-semibold underline underline-offset-4 hover:text-pink-800 hover:scale-105 transition-all duration-150">
+            Forgot password?
+        </a>
+    </div>
+</form>
+{% endblock %}
